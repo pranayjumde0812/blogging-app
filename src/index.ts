@@ -1,9 +1,10 @@
 import express = require("express");
 import cors = require("cors");
+import { env } from "./config/config";
 
 const app = express();
 app.use(cors());
 
-app.listen(5000, () => {
-  console.log("app is running");
+app.listen(env.PORT, () => {
+  console.log("app is running on ", env.PORT);
 });
