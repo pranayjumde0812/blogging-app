@@ -1,4 +1,4 @@
-import {HttpStatus, HttpStatusMessages} from '../../constants/httpStatusCode';
+import {HttpStatus, HttpStatusMessages} from '../../constants/httpStatus';
 import HttpException from './http.exceptions';
 
 export class NotFoundException extends HttpException {
