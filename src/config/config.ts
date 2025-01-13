@@ -8,6 +8,8 @@ const envVarsSchema = z.object({
   PORT: z.coerce.number().default(3000),
   MONGODB_URL: z.string(),
   JWT_SECRET: z.string(),
+  JWT_ACCESS_TOKEN_EXPIRATION_MINUTES: z.coerce.number().default(10),
+  JWT_REFRESH_TOKEN_EXPIRATION_DAYS: z.coerce.number().default(1),
 });
 
 export const env = envVarsSchema.parse(process.env);
