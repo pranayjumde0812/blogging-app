@@ -1,11 +1,17 @@
 import {Router} from 'express';
 import authRouter from './auth.routes';
+import authorRouter from './author.routes';
+
 const router = Router();
 
 const defaultRoutes = [
   {
     path: '/auth',
     route: authRouter,
+  },
+  {
+    path: '/author',
+    route: authorRouter,
   },
 ];
 
