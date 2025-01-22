@@ -4,6 +4,7 @@ import {HttpStatus} from '../constants/httpStatus';
 import {authService, tokenService} from '../services';
 import logger from '../utils/logger';
 import {responseMaker} from '../utils/responseMaker';
+import {AuthRequest} from '../constants/customRequest';
 
 export const login = catchAsync(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -17,5 +18,26 @@ export const login = catchAsync(
     logger.info('End of auth controller login method');
 
     res.status(HttpStatus.OK).send(responseMaker({author, tokens}));
+  },
+);
+
+export const logout = catchAsync(
+  async (
+    req: AuthRequest,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    logger.info('Start of auth controller logout method');
+
+    const {user} = req;
+
+    logger.info(user);
+
+    await authService.logout(user);
+    logger.info('Logged Out successfully');
+
+    logger.info('End of auth controller logout method');
+
+    res.status(200).send(responseMaker({message: 'Successfully logged out'}));
   },
 );
