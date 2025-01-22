@@ -1,4 +1,5 @@
 import z from 'zod';
+import {refreshToken} from '../controller/auth.controller';
 
 export const LoginSchema = z.object({
   email: z
@@ -11,3 +12,9 @@ export const LoginSchema = z.object({
 });
 
 export type LoginInterface = z.infer<typeof LoginSchema>;
+
+export const RefreshTokenSchema = z.object({
+  refreshToken: z.string({message: 'Refresh token required'}),
+});
+
+export type ResfreshTokenInterface = z.infer<typeof RefreshTokenSchema>;

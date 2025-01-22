@@ -1,7 +1,8 @@
-import {authorService} from '.';
+import {authorService, tokenService} from '.';
 import TOKEN_TYPES from '../constants/tokenTypes';
 import {Token} from '../models/token.model';
-import {LoginInterface} from '../schema/auth.schema';
+import {LoginInterface, ResfreshTokenInterface} from '../schema/auth.schema';
+import {User} from '../types/user';
 import {BadRequestException} from '../utils/exceptions';
 import logger from '../utils/logger';
 
@@ -16,7 +17,7 @@ export const login = async (loginBody: LoginInterface): Promise<any> => {
   return author;
 };
 
-export const logout = async (user: any): Promise<any> => {
+export const logout = async (user: string): Promise<any> => {
   logger.info('Start of auth service logout method');
 
   const latestToken = await Token.findOne({
@@ -34,4 +35,16 @@ export const logout = async (user: any): Promise<any> => {
   logger.info('End of auth service logout method');
 
   return response;
+};
+
+export const refreshToken = async (refreshToken: string): Promise<any> => {
+  logger.info('Start of auth service refresh token method');
+
+  const tokenDoc = await tokenService.verifyToken(
+    refreshToken,
+    TOKEN_TYPES.REFRESH,
+  );
+
+  // const author = await authorService.getAuthorById(tokenDoc.user);
+  return tokenService.generateAuthTokenFromRefresh(tokenDoc.user);
 };

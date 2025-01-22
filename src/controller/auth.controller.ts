@@ -41,3 +41,17 @@ export const logout = catchAsync(
     res.status(200).send(responseMaker({message: 'Successfully logged out'}));
   },
 );
+
+export const refreshToken = catchAsync(
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    logger.info('Start of auth controller refresh token method');
+
+    const token = await authService.refreshToken(req.body.refreshToken);
+
+    logger.info('End of auth controller refresh token method');
+
+    res
+      .status(200)
+      .send(responseMaker({message: 'Access token created', ...token}));
+  },
+);

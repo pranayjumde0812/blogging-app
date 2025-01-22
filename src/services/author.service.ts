@@ -34,3 +34,17 @@ export const getAuthorByEmail = async (email: string): Promise<any> => {
 
   return author;
 };
+
+export const getAuthorById = async (authorId: string): Promise<any> => {
+  logger.info('Start of GetAuthorByEmail method of author service');
+  logger.info(`AuthorId: ${authorId}`);
+
+  const author = await Author.findById(authorId);
+  if (!author) {
+    throw new BadRequestException('Invalid authorId');
+  }
+
+  logger.info('End of GetAuthorByEmail method of author service');
+
+  return author;
+};

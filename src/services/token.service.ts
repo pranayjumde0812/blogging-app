@@ -6,6 +6,7 @@ import TOKEN_TYPES from '../constants/tokenTypes';
 import {TokenPayload} from '../constants/jwtPayload';
 import {Token} from '../models/token.model';
 import {UnAuthorizedException} from '../utils/exceptions';
+import {access} from 'fs';
 
 export const generateAuthToken = async (user: User) => {
   const accessTokenExpires = moment().add(
@@ -85,7 +86,7 @@ async function saveToken(
 
 export const verifyToken = async (
   token: string,
-  type: string,
+  type: TOKEN_TYPES.REFRESH | TOKEN_TYPES.VERIFY_EMAIL,
 ): Promise<any> => {
   try {
     const payload = jwt.verify(token, env.JWT_SECRET) as TokenPayload;
@@ -110,4 +111,24 @@ export const verifyToken = async (
       throw error;
     }
   }
+};
+
+export const generateAuthTokenFromRefresh = async (userId: string) => {
+  const accessTokenExpires = moment().add(
+    env.JWT_ACCESS_TOKEN_EXPIRATION_MINUTES,
+    'minutes',
+  );
+
+  const accessToken = generateToken(
+    userId,
+    accessTokenExpires,
+    TOKEN_TYPES.ACCESS,
+  );
+
+  return {
+    access: {
+      token: accessToken,
+      expires: accessTokenExpires.toDate(),
+    },
+  };
 };
