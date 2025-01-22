@@ -3,6 +3,7 @@ import catchAsync from '../utils/catchAsync';
 import {HttpStatus} from '../constants/httpStatus';
 import {authorService} from '../services';
 import logger from '../utils/logger';
+import {responseMaker} from '../utils/responseMaker';
 
 export const signupAuthor = catchAsync(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -13,6 +14,12 @@ export const signupAuthor = catchAsync(
 
     logger.info('End of signupAuthor controller method');
 
-    res.status(HttpStatus.CREATED).send({createdAuthor});
+    res.status(HttpStatus.CREATED).send(
+      responseMaker({
+        success: true,
+        message: 'Author created successfully',
+        createdAuthor,
+      }),
+    );
   },
 );
