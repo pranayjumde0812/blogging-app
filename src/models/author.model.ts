@@ -7,17 +7,14 @@ interface IAuthorDocument extends Document {
   namePrefix: string;
   email: string;
   password: string;
+  isPasswordMatch(password: string): Promise<boolean>;
 }
 
 interface IAuthorModel extends Model<IAuthorDocument> {
   isEmailTaken(email: string, excludeAuthorId?: string): Promise<Boolean>;
 }
 
-interface IAuthor extends IAuthorDocument {
-  isPasswordMatch(password: string): Promise<Boolean>;
-}
-
-const authorSchema = new Schema<IAuthorDocument>(
+const authorSchema = new Schema<IAuthorDocument, IAuthorModel>(
   {
     firstName: {type: String, required: true},
     lastName: {type: String, required: true},
@@ -44,22 +41,24 @@ const authorSchema = new Schema<IAuthorDocument>(
         ret.id = ret._id;
         delete ret._id;
         delete ret.__v;
+        delete ret.password;
       },
     },
   },
 );
 
-authorSchema.statics.isEmailTaken = async function (email, excludeAuthorId) {
+authorSchema.statics.isEmailTaken = async function (
+  email: string,
+  excludeAuthorId?: string,
+): Promise<boolean> {
   const author = await this.findOne({email, _id: {$ne: excludeAuthorId}});
   return !!author;
 };
 
 authorSchema.methods.isPasswordMatch = async function (
-  this: IAuthorDocument,
   password: string,
-) {
-  const match = await bcrypt.compare(password, this.password);
-  return match;
+): Promise<boolean> {
+  return bcrypt.compare(password, this.password);
 };
 
 authorSchema.pre('save', async function (next) {
@@ -69,4 +68,4 @@ authorSchema.pre('save', async function (next) {
   next();
 });
 
-export const Author = model<IAuthorDocument>('Author', authorSchema);
+export const Author = model<IAuthorDocument, IAuthorModel>('Author', authorSchema);
