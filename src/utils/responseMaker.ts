@@ -3,12 +3,12 @@ export const responseMaker = ({
   message,
   ...data
 }: {
-  success: boolean;
+  success?: boolean;
   message?: string;
   [key: string]: unknown;
 }): Record<string, unknown> => {
   return {
-    success: success,
+    success: success || true,
     message: message,
     data: data,
   };

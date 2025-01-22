@@ -23,3 +23,14 @@ export const signupAuthor = async (
   logger.info('End of signupAuthor service method');
   return createdAuthor;
 };
+
+export const getAuthorByEmail = async (email: string): Promise<any> => {
+  logger.info('Start of GetAuthorByEmail method of author service');
+  logger.info(`Email: ${email}`);
+
+  const author = await Author.findOne({email: email});
+
+  logger.info('End of GetAuthorByEmail method of author service');
+
+  return author;
+};
