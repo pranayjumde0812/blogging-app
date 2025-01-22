@@ -68,4 +68,5 @@ authorSchema.pre('save', async function (next) {
   }
   next();
 });
+
 export const Author = model<IAuthorDocument>('Author', authorSchema);
