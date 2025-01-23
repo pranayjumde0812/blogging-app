@@ -16,6 +16,7 @@ const envVarsSchema = z.object({
   SMTP_USERNAME: z.string(),
   SMTP_PASSWORD: z.string(),
   EMAIL_FROM: z.string().email(),
+  FE_URL: z.string(),
 });
 
 export const env = envVarsSchema.parse(process.env);
