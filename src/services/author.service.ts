@@ -1,6 +1,9 @@
 import {Author} from '../models/author.model';
-import {SignupAuthorInterface} from '../schema/author.schema';
-import {BadRequestException} from '../utils/exceptions';
+import {
+  SignupAuthorInterface,
+  UpdateAuthorInterface,
+} from '../schema/author.schema';
+import {BadRequestException, NotFoundException} from '../utils/exceptions';
 import logger from '../utils/logger';
 
 export const signupAuthor = async (
@@ -46,5 +49,25 @@ export const getAuthorById = async (authorId: string): Promise<any> => {
 
   logger.info('End of GetAuthorByEmail method of author service');
 
+  return author;
+};
+
+export const updateAuthorById = async (
+  authorId: string,
+  updateBody: UpdateAuthorInterface,
+) => {
+  const author = await getAuthorById(authorId);
+  if (!author) {
+    throw new NotFoundException('Author not found');
+  }
+
+  if (
+    updateBody.email &&
+    (await Author.isEmailTaken(updateBody.email, authorId))
+  ) {
+    throw new BadRequestException('Email Already Exits');
+  }
+  Object.assign(author, updateBody);
+  await author.save();
   return author;
 };

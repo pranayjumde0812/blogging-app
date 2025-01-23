@@ -5,8 +5,15 @@ import {env} from '../config/config';
 import TOKEN_TYPES from '../constants/tokenTypes';
 import {TokenPayload} from '../constants/jwtPayload';
 import {Token} from '../models/token.model';
-import {UnAuthorizedException} from '../utils/exceptions';
+import {
+  BadRequestException,
+  NotFoundException,
+  UnAuthorizedException,
+} from '../utils/exceptions';
 import {access} from 'fs';
+import {Author} from '../models/author.model';
+import {authorService, authService} from '.';
+import auth from '../middleware/authenticate.middleware';
 
 export const generateAuthToken = async (user: User) => {
   const accessTokenExpires = moment().add(
@@ -86,7 +93,7 @@ async function saveToken(
 
 export const verifyToken = async (
   token: string,
-  type: TOKEN_TYPES.REFRESH | TOKEN_TYPES.VERIFY_EMAIL,
+  type: TOKEN_TYPES.REFRESH | TOKEN_TYPES.VERIFY_EMAIL | TOKEN_TYPES.RESET_PASSWORD,
 ): Promise<any> => {
   try {
     const payload = jwt.verify(token, env.JWT_SECRET) as TokenPayload;
@@ -131,4 +138,32 @@ export const generateAuthTokenFromRefresh = async (userId: string) => {
       expires: accessTokenExpires.toDate(),
     },
   };
+};
+
+export const generateResetPasswordToken = async (email: string) => {
+  const author = await authorService.getAuthorByEmail(email);
+
+  if (!author) {
+    throw new NotFoundException('User not registered with this email');
+  }
+
+  const expires = moment().add(
+    env.JWT_RESET_PASSWORD_EXPIRATION_MINUTES,
+    'minutes',
+  );
+
+  const resetPasswordToken = generateToken(
+    author.id,
+    expires,
+    TOKEN_TYPES.RESET_PASSWORD,
+  );
+
+  await saveToken(
+    resetPasswordToken,
+    author.id,
+    expires,
+    TOKEN_TYPES.RESET_PASSWORD,
+  );
+
+  return {resetPasswordToken, author};
 };

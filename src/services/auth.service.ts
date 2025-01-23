@@ -1,7 +1,7 @@
 import {authorService, tokenService} from '.';
 import TOKEN_TYPES from '../constants/tokenTypes';
 import {Token} from '../models/token.model';
-import {LoginInterface, ResfreshTokenInterface} from '../schema/auth.schema';
+import {LoginInterface, ResetPasswordInterface} from '../schema/auth.schema';
 import {User} from '../types/user';
 import {BadRequestException} from '../utils/exceptions';
 import logger from '../utils/logger';
@@ -45,6 +45,24 @@ export const refreshToken = async (refreshToken: string): Promise<any> => {
     TOKEN_TYPES.REFRESH,
   );
 
-  // const author = await authorService.getAuthorById(tokenDoc.user);
   return tokenService.generateAuthTokenFromRefresh(tokenDoc.user);
+};
+
+export const resetPassword = async (
+  resetPasswordBody: ResetPasswordInterface,
+) => {
+  const {token, password} = resetPasswordBody;
+
+  const resetPasswordTokenDoc = await tokenService.verifyToken(
+    token,
+    TOKEN_TYPES.RESET_PASSWORD,
+  );
+
+  const author = await authorService.getAuthorById(resetPasswordTokenDoc.user);
+  if (!author) {
+    throw new BadRequestException('Invalid link/Expired link');
+  }
+
+  await authorService.updateAuthorById(author.id, {password: password});
+  await Token.deleteMany({user: author.id, type: TOKEN_TYPES.RESET_PASSWORD});
 };

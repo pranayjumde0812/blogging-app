@@ -16,3 +16,10 @@ export const SignupAuthorSchema = z.object({
 });
 
 export type SignupAuthorInterface = z.infer<typeof SignupAuthorSchema>;
+
+export const UpdateAuthorSchema = z.object({
+  email: z.string().email().optional(),
+  password: z.string().email().optional(),
+});
+
+export type UpdateAuthorInterface = z.infer<typeof UpdateAuthorSchema>;

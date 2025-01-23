@@ -1,7 +1,7 @@
 import {Request, Response, NextFunction} from 'express';
 import catchAsync from '../utils/catchAsync';
 import {HttpStatus} from '../constants/httpStatus';
-import {authService, tokenService} from '../services';
+import {authService, emailService, tokenService} from '../services';
 import logger from '../utils/logger';
 import {responseMaker} from '../utils/responseMaker';
 import {AuthRequest} from '../constants/customRequest';
@@ -38,7 +38,9 @@ export const logout = catchAsync(
 
     logger.info('End of auth controller logout method');
 
-    res.status(200).send(responseMaker({message: 'Successfully logged out'}));
+    res
+      .status(HttpStatus.OK)
+      .send(responseMaker({message: 'Successfully logged out'}));
   },
 );
 
@@ -51,7 +53,38 @@ export const refreshToken = catchAsync(
     logger.info('End of auth controller refresh token method');
 
     res
-      .status(200)
+      .status(HttpStatus.OK)
       .send(responseMaker({message: 'Access token created', ...token}));
+  },
+);
+
+export const forgotPassword = catchAsync(
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const {email} = req.body;
+    const {resetPasswordToken, author} =
+      await tokenService.generateResetPasswordToken(email);
+
+    await emailService.sendRestPasswordEmail(
+      `${author.firstName} ${author.lastName}`,
+      email,
+      resetPasswordToken,
+    );
+
+    res.status(HttpStatus.OK).send(
+      responseMaker({
+        message: 'Reset password link sent to your registered email',
+      }),
+    );
+  },
+);
+
+export const resetPassword = catchAsync(
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    
+    await authService.resetPassword(req.body);
+
+    res
+      .status(HttpStatus.OK)
+      .send(responseMaker({message: 'Password reset successfully'}));
   },
 );
