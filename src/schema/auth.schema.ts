@@ -25,3 +25,12 @@ export const ForgotPasswordSchema = z.object({
     .email({message: 'Invalid Email'})
     .toLowerCase(),
 });
+
+export const ResetPasswordSchema = z.object({
+  token: z.string(),
+  password: z
+    .string()
+    .min(8, {message: 'Password must be at least 8 characters long'}),
+});
+
+export type ResetPasswordInterface = z.infer<typeof ResetPasswordSchema>;
