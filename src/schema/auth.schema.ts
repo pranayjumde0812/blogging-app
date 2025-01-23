@@ -18,3 +18,10 @@ export const RefreshTokenSchema = z.object({
 });
 
 export type ResfreshTokenInterface = z.infer<typeof RefreshTokenSchema>;
+
+export const ForgotPasswordSchema = z.object({
+  email: z
+    .string({message: 'email required'})
+    .email({message: 'Invalid Email'})
+    .toLowerCase(),
+});

@@ -38,7 +38,9 @@ export const logout = catchAsync(
 
     logger.info('End of auth controller logout method');
 
-    res.status(200).send(responseMaker({message: 'Successfully logged out'}));
+    res
+      .status(HttpStatus.OK)
+      .send(responseMaker({message: 'Successfully logged out'}));
   },
 );
 
@@ -51,7 +53,17 @@ export const refreshToken = catchAsync(
     logger.info('End of auth controller refresh token method');
 
     res
-      .status(200)
+      .status(HttpStatus.OK)
       .send(responseMaker({message: 'Access token created', ...token}));
+  },
+);
+
+export const forgotPassword = catchAsync(
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const {email} = req.body;
+    const forgotPasswordToken =
+      await tokenService.generateResetPasswordToken(email);
+
+    res.status(HttpStatus.OK).send(responseMaker({forgotPasswordToken}));
   },
 );

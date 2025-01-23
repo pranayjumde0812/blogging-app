@@ -10,6 +10,7 @@ const envVarsSchema = z.object({
   JWT_SECRET: z.string(),
   JWT_ACCESS_TOKEN_EXPIRATION_MINUTES: z.coerce.number().default(10),
   JWT_REFRESH_TOKEN_EXPIRATION_DAYS: z.coerce.number().default(1),
+  JWT_RESET_PASSWORD_EXPIRATION_MINUTES: z.coerce.number().default(15),
 });
 
 export const env = envVarsSchema.parse(process.env);
