@@ -165,5 +165,5 @@ export const generateResetPasswordToken = async (email: string) => {
     TOKEN_TYPES.RESET_PASSWORD,
   );
 
-  return resetPasswordToken;
+  return {resetPasswordToken, author};
 };

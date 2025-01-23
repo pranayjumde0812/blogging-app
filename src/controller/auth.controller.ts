@@ -1,7 +1,7 @@
 import {Request, Response, NextFunction} from 'express';
 import catchAsync from '../utils/catchAsync';
 import {HttpStatus} from '../constants/httpStatus';
-import {authService, tokenService} from '../services';
+import {authService, emailService, tokenService} from '../services';
 import logger from '../utils/logger';
 import {responseMaker} from '../utils/responseMaker';
 import {AuthRequest} from '../constants/customRequest';
@@ -61,9 +61,21 @@ export const refreshToken = catchAsync(
 export const forgotPassword = catchAsync(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const {email} = req.body;
-    const forgotPasswordToken =
+    const {resetPasswordToken, author} =
       await tokenService.generateResetPasswordToken(email);
 
-    res.status(HttpStatus.OK).send(responseMaker({forgotPasswordToken}));
+    await emailService.sendRestPasswordEmail(
+      `${author.firstName} ${author.lastName}`,
+      email,
+      resetPasswordToken,
+    );
+
+    res
+      .status(HttpStatus.OK)
+      .send(
+        responseMaker({
+          message: 'Reset password link sent to your registered email',
+        }),
+      );
   },
 );
