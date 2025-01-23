@@ -93,7 +93,7 @@ async function saveToken(
 
 export const verifyToken = async (
   token: string,
-  type: TOKEN_TYPES.REFRESH | TOKEN_TYPES.VERIFY_EMAIL,
+  type: TOKEN_TYPES.REFRESH | TOKEN_TYPES.VERIFY_EMAIL | TOKEN_TYPES.RESET_PASSWORD,
 ): Promise<any> => {
   try {
     const payload = jwt.verify(token, env.JWT_SECRET) as TokenPayload;

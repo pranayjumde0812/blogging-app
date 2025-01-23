@@ -5,6 +5,7 @@ import {
   ForgotPasswordSchema,
   LoginSchema,
   RefreshTokenSchema,
+  ResetPasswordSchema,
 } from '../schema/auth.schema';
 import auth from '../middleware/authenticate.middleware';
 
@@ -24,6 +25,12 @@ routes.post(
   '/forgot-password',
   validateBody(ForgotPasswordSchema),
   authController.forgotPassword,
+);
+
+routes.post(
+  '/reset-password',
+  validateBody(ResetPasswordSchema),
+  authController.resetPassword,
 );
 
 export default routes;

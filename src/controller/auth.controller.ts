@@ -70,12 +70,21 @@ export const forgotPassword = catchAsync(
       resetPasswordToken,
     );
 
+    res.status(HttpStatus.OK).send(
+      responseMaker({
+        message: 'Reset password link sent to your registered email',
+      }),
+    );
+  },
+);
+
+export const resetPassword = catchAsync(
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    
+    await authService.resetPassword(req.body);
+
     res
       .status(HttpStatus.OK)
-      .send(
-        responseMaker({
-          message: 'Reset password link sent to your registered email',
-        }),
-      );
+      .send(responseMaker({message: 'Password reset successfully'}));
   },
 );
