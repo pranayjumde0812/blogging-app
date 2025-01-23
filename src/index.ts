@@ -4,6 +4,7 @@ import {env} from './config/config';
 import {databaseConnection} from './config/dbconfig';
 import logger from './utils/logger';
 import {errorHandler} from './utils/errorhandler';
+import './config/email.config';
 import router from './routes';
 
 const app = express();
