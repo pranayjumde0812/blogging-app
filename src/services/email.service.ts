@@ -1,5 +1,7 @@
+import path from 'path';
 import {env} from '../config/config';
 import transporter from '../config/email.config';
+import fs from 'fs';
 
 export const sendRestPasswordEmail = async (
   fullName: string,
@@ -9,16 +11,18 @@ export const sendRestPasswordEmail = async (
   const subject = 'Reset Password - Blogging Application';
   const resetPasswordLink = `${env.FE_URL}/reset-password?token=${token}`;
 
-  const content = `Dear ${fullName}, 
-  
-  Reset Password with the given link: ${resetPasswordLink}
-  Ignore if not request by you.
+  const templatePath = path.join(
+    __dirname,
+    '../assets/template/reset-password.html',
+  );
 
-  Regards,
-  Admin  
-  `;
+  const template = fs.readFileSync(templatePath, 'utf8');
 
-  await sendEmail(email, subject, content);
+  const emailHtmlContent = template
+    .replace('{{fullName}}', fullName)
+    .replace('{{resetPasswordLink}}', resetPasswordLink);
+
+  await sendEmail(email, subject, emailHtmlContent);
 };
 
 export const sendEmail = async (
@@ -26,6 +30,18 @@ export const sendEmail = async (
   subject: string,
   content: string,
 ) => {
-  const message = {from: env.EMAIL_FROM, to, subject, text: content};
+  const message = {
+    from: env.EMAIL_FROM,
+    to,
+    subject,
+    html: content,
+    attachments: [
+      {
+        filename: 'company_logo.png',
+        path: path.join(__dirname, '../assets/images/company-logo.jpeg'),
+        cid: 'company-logo',
+      },
+    ],
+  };
   await transporter.sendMail(message);
 };
