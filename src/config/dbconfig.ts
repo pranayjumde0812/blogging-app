@@ -10,6 +10,6 @@ export const databaseConnection = async () => {
     logger.info('Database connected successfully');
   } catch (err) {
     logger.error('Database connection failed ', err);
-    throw err;
+    process.exit(0);
   }
 };
